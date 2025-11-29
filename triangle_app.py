@@ -80,10 +80,10 @@ if show_grid:
         else:
             break  # Stop showing next inputs if previous not filled
 
-# ---------------- Triangle coordinates ----------------
+# ---------------- Triangle coordinates (2:1 height:base) ----------------
 base_left  = (0, 0)
 base_right = (1, 0)
-top        = (0.5, 0.866)
+top        = (0.5, 2)   # Height = 2 for 2:1 ratio
 mid        = (0.5, 0)
 
 # ---------------- Create figure ----------------
