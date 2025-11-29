@@ -43,7 +43,7 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     return patch
 
 # ---------------- Streamlit GUI ----------------
-st.title("Interactive Triangle Fill with Fixed Cross (2:1 Height)")
+st.title("Interactive Triangle Fill with Cross (2:1 Height)")
 
 # Centered title
 title_text = st.text_input("Centered Title (optional)", "")
@@ -99,7 +99,7 @@ mid = (0.5, 0)
 fig, ax = plt.subplots(figsize=(6, 12), dpi=100)
 ax.set_aspect("equal")
 ax.set_xlim(-0.1, 1.1)
-ax.set_ylim(-0.1, top[1] + 0.8)  # extra space for cross and title
+ax.set_ylim(-0.1, top[1] + 0.5)  # extra space for cross and title
 ax.axis("off")
 
 # Draw left and right fills
@@ -146,28 +146,29 @@ ax.text(
 )
 
 # ---------------- Draw fixed cross ----------------
-# Fixed parameters
 cross_height = 0.2
 cross_width = 0.1
 cross_intersection = 0.7
 cross_linewidth = 3
 cross_color = 'black'
-cross_offset = 0.1  # offset above apex
+cross_offset = -0.05  # slightly downward from apex
 
 apex_x, apex_y = top
-vertical_top = apex_y + cross_height + cross_offset
 
-# Vertical line
+# Vertical line (bottom slightly below apex)
+vertical_bottom = apex_y + cross_offset
+vertical_top = vertical_bottom + cross_height
+
 ax.plot(
     [apex_x, apex_x],
-    [apex_y + cross_offset, vertical_top],
+    [vertical_bottom, vertical_top],
     color=cross_color, linewidth=cross_linewidth, zorder=10
 )
 
-# Horizontal line at intersection point
-horizontal_y = apex_y + cross_offset + cross_height * cross_intersection
+# Horizontal line at intersection
+horizontal_y = vertical_bottom + cross_height * cross_intersection
 ax.plot(
-    [apex_x - cross_width/2, apex_x + cross_width/2],
+    [apex_x - cross_width / 2, apex_x + cross_width / 2],
     [horizontal_y, horizontal_y],
     color=cross_color, linewidth=cross_linewidth, zorder=10
 )
