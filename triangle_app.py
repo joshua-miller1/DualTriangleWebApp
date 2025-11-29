@@ -151,7 +151,7 @@ cross_width = 0.1
 cross_intersection = 0.7
 cross_linewidth = 3
 cross_color = 'black'
-cross_offset = -0.05  # slightly downward from apex
+cross_offset = -0.02 # slightly downward from apex
 
 apex_x, apex_y = top
 
