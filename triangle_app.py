@@ -4,7 +4,7 @@ from matplotlib.patches import Polygon
 
 # ---------------- Set page layout ----------------
 st.set_page_config(
-    page_title="Interactive Triangle Fill",
+    page_title="Interactive Triangle Fill with Cross",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -43,7 +43,7 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     return patch
 
 # ---------------- Streamlit GUI ----------------
-st.title("Interactive Triangle Fill (2:1 Height)")
+st.title("Interactive Triangle Fill with Cross (2:1 Height)")
 
 # Centered title
 title_text = st.text_input("Centered Title (optional)", "")
@@ -95,11 +95,11 @@ base_right = (1, 0)
 top = (0.5, 2)  # 2:1 height-to-base ratio
 mid = (0.5, 0)
 
-# ---------------- Create figure (fixed readable size) ----------------
+# ---------------- Create figure ----------------
 fig, ax = plt.subplots(figsize=(6, 12), dpi=100)
 ax.set_aspect("equal")
 ax.set_xlim(-0.1, 1.1)
-ax.set_ylim(-0.1, top[1] + 0.2)
+ax.set_ylim(-0.1, top[1] + 0.6)  # extra space for cross
 ax.axis("off")
 
 # Draw left and right fills
@@ -154,6 +154,28 @@ if title_text.strip():
         fontsize=title_size, fontfamily=title_font, fontweight="bold",
         color=title_color, zorder=8
     )
+
+# ---------------- Draw cross on top of triangle ----------------
+cross_height = 0.4
+cross_width = 0.2
+cross_color = 'black'
+cross_linewidth = 2
+
+apex_x, apex_y = top
+
+# Vertical line of cross
+ax.plot(
+    [apex_x, apex_x],
+    [apex_y, apex_y + cross_height],
+    color=cross_color, linewidth=cross_linewidth, zorder=10
+)
+
+# Horizontal line of cross (centered at vertical top, halfway up cross)
+ax.plot(
+    [apex_x - cross_width/2, apex_x + cross_width/2],
+    [apex_y + cross_height*0.5, apex_y + cross_height*0.5],
+    color=cross_color, linewidth=cross_linewidth, zorder=10
+)
 
 # ---------------- Centered display of figure ----------------
 col_left, col_center, col_right = st.columns([1, 2, 1])  # middle column wider
