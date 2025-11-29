@@ -103,11 +103,24 @@ outline = Polygon([base_left, base_right, top], closed=True, fill=False,
 ax.add_patch(outline)
 ax.plot([0.5, 0.5], [0, 0.866], color="black", linewidth=2, zorder=2)
 
-# ---------------- Draw custom horizontal grid lines on top ----------------
+# ---------------- Draw custom horizontal grid lines on top (subtle) ----------------
+grid_line_width = 2 * 0.75  # 75% of outline thickness
 for pct in grid_percentages:
     y = pct / 100 * top[1]
-    ax.hlines(y, xmin=0, xmax=1, colors='gray', linestyles='dashed', linewidth=1.5, zorder=5)
-    ax.text(-0.05, y, f"{pct:.0f}%", ha="right", va="center", fontsize=10, fontweight="bold", color="gray", zorder=6)
+    ax.hlines(
+        y, xmin=0, xmax=1,
+        colors='gray',
+        linestyles='dashed',
+        linewidth=grid_line_width,
+        zorder=5
+    )
+    ax.text(
+        -0.05, y, f"{pct:.0f}%",
+        ha="right", va="center",
+        fontsize=10, fontweight="bold",
+        color="gray",
+        zorder=6
+    )
 
 # Draw left label
 x_left_center = (base_left[0] + mid[0]) / 2
