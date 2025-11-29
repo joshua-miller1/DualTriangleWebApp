@@ -68,10 +68,17 @@ grid_percentages = []
 
 if show_grid:
     st.markdown("### Set up to 10 horizontal grid lines (0–100%)")
+    previous_filled = True
     for i in range(10):
-        pct = st.number_input(f"Grid line {i+1} (%)", min_value=0.0, max_value=100.0, value=0.0, step=1.0, key=f"grid{i}")
-        if pct > 0:
-            grid_percentages.append(pct)
+        if previous_filled:
+            pct = st.number_input(f"Grid line {i+1} (%)", min_value=0.0, max_value=100.0, value=0.0, step=1.0, key=f"grid{i}")
+            if pct > 0:
+                grid_percentages.append(pct)
+                previous_filled = True
+            else:
+                previous_filled = False
+        else:
+            break  # Stop showing next inputs if previous not filled
 
 # ---------------- Triangle coordinates ----------------
 base_left  = (0, 0)
@@ -92,15 +99,15 @@ fill_half(ax, mid, base_right, top, pct_right, color=color_right)
 
 # Draw outline and center line
 outline = Polygon([base_left, base_right, top], closed=True, fill=False,
-                  edgecolor="black", linewidth=2, zorder=10)
+                  edgecolor="black", linewidth=2, zorder=2)
 ax.add_patch(outline)
-ax.plot([0.5, 0.5], [0, 0.866], color="black", linewidth=2, zorder=11)
+ax.plot([0.5, 0.5], [0, 0.866], color="black", linewidth=2, zorder=2)
 
-# ---------------- Draw custom horizontal grid lines ----------------
+# ---------------- Draw custom horizontal grid lines on top ----------------
 for pct in grid_percentages:
     y = pct / 100 * top[1]
-    ax.hlines(y, xmin=0, xmax=1, colors='gray', linestyles='dashed', linewidth=1, zorder=0)
-    ax.text(-0.05, y, f"{pct:.0f}%", ha="right", va="center", fontsize=10, fontweight="bold", color="gray")
+    ax.hlines(y, xmin=0, xmax=1, colors='gray', linestyles='dashed', linewidth=1.5, zorder=5)
+    ax.text(-0.05, y, f"{pct:.0f}%", ha="right", va="center", fontsize=10, fontweight="bold", color="gray", zorder=6)
 
 # Draw left label
 x_left_center = (base_left[0] + mid[0]) / 2
@@ -108,7 +115,7 @@ ax.text(
     x_left_center, -0.05,
     f"{label_left}: {pct_left:.0f}%",
     ha="center", va="top",
-    fontsize=left_size, fontfamily=left_font, fontweight="bold"
+    fontsize=left_size, fontfamily=left_font, fontweight="bold", zorder=7
 )
 
 # Draw right label
@@ -117,7 +124,7 @@ ax.text(
     x_right_center, -0.05,
     f"{label_right}: {pct_right:.0f}%",
     ha="center", va="top",
-    fontsize=right_size, fontfamily=right_font, fontweight="bold"
+    fontsize=right_size, fontfamily=right_font, fontweight="bold", zorder=7
 )
 
 # Draw centered title if provided
@@ -127,7 +134,7 @@ if title_text.strip():
         title_text,
         ha="center", va="bottom",
         fontsize=title_size, fontfamily=title_font, fontweight="bold",
-        color=title_color
+        color=title_color, zorder=8
     )
 
 # ---------------- Show figure ----------------
