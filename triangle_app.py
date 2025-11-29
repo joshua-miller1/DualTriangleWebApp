@@ -37,7 +37,7 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     return patch
 
 # ---------------- Streamlit UI ----------------
-st.title("Interactive Triangle Fill with Custom Fonts & Grid Lines")
+st.title("Interactive Triangle Fill (2:1 Height)")
 
 # Centered title input
 title_text = st.text_input("Centered Title (optional)", "")
@@ -71,7 +71,10 @@ if show_grid:
     previous_filled = True
     for i in range(10):
         if previous_filled:
-            pct = st.number_input(f"Grid line {i+1} (%)", min_value=0.0, max_value=100.0, value=0.0, step=1.0, key=f"grid{i}")
+            pct = st.number_input(
+                f"Grid line {i+1} (%)",
+                min_value=0.0, max_value=100.0, value=0.0, step=1.0, key=f"grid{i}"
+            )
             if pct > 0:
                 grid_percentages.append(pct)
                 previous_filled = True
@@ -83,14 +86,14 @@ if show_grid:
 # ---------------- Triangle coordinates (2:1 height:base) ----------------
 base_left  = (0, 0)
 base_right = (1, 0)
-top        = (0.5, 2)   # Height = 2 for 2:1 ratio
+top        = (0.5, 2)  # Height = 2 for 2:1 ratio
 mid        = (0.5, 0)
 
 # ---------------- Create figure ----------------
-fig, ax = plt.subplots(figsize=(6, 12))  # Width x Height
+fig, ax = plt.subplots(figsize=(6, 12))  # Taller figure for 2:1 triangle
 ax.set_aspect("equal")
 ax.set_xlim(-0.1, 1.1)
-ax.set_ylim(-0.1, 1)
+ax.set_ylim(-0.1, top[1] + 0.2)  # Include space above top for title
 ax.axis("off")
 
 # Draw fills
@@ -101,10 +104,10 @@ fill_half(ax, mid, base_right, top, pct_right, color=color_right)
 outline = Polygon([base_left, base_right, top], closed=True, fill=False,
                   edgecolor="black", linewidth=2, zorder=2)
 ax.add_patch(outline)
-ax.plot([0.5, 0.5], [0, 0.866], color="black", linewidth=2, zorder=2)
+ax.plot([0.5, 0.5], [0, top[1]], color="black", linewidth=2, zorder=2)
 
-# ---------------- Draw custom horizontal grid lines on top (subtle) ----------------
-grid_line_width = 2 * 0.50  # 50% of outline thickness
+# ---------------- Draw custom horizontal grid lines on top ----------------
+grid_line_width = 2 * 0.75  # 75% of outline thickness
 for pct in grid_percentages:
     y = pct / 100 * top[1]
     ax.hlines(
@@ -143,7 +146,7 @@ ax.text(
 # Draw centered title if provided
 if title_text.strip():
     ax.text(
-        0.5, 1.05,
+        0.5, top[1] + 0.1,  # Slightly above triangle top
         title_text,
         ha="center", va="bottom",
         fontsize=title_size, fontfamily=title_font, fontweight="bold",
