@@ -155,5 +155,7 @@ if title_text.strip():
         color=title_color, zorder=8
     )
 
-# ---------------- Show figure ----------------
-st.pyplot(fig, use_container_width=False)  # keeps figure scaled to viewable size
+# ---------------- Centered display of figure ----------------
+col_left, col_center, col_right = st.columns([1, 2, 1])  # middle column wider
+with col_center:
+    st.pyplot(fig, use_container_width=False)  # keeps figure readable size
