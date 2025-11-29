@@ -109,7 +109,7 @@ mid = (0.5, 0)
 fig, ax = plt.subplots(figsize=(6, 12), dpi=100)
 ax.set_aspect("equal")
 ax.set_xlim(-0.1, 1.1)
-ax.set_ylim(-0.1, top[1] + 0.6)  # extra space for cross
+ax.set_ylim(-0.1, top[1] + 0.8)  # extra space for cross and title
 ax.axis("off")
 
 # Draw left and right fills
@@ -155,17 +155,8 @@ ax.text(
     fontsize=right_size, fontfamily=right_font, fontweight="bold", zorder=7
 )
 
-# Draw centered title if provided
-if title_text.strip():
-    ax.text(
-        0.5, top[1] + 0.1,  # slightly above triangle top
-        title_text,
-        ha="center", va="bottom",
-        fontsize=title_size, fontfamily=title_font, fontweight="bold",
-        color=title_color, zorder=8
-    )
-
 # ---------------- Draw cross if enabled ----------------
+top_y_for_title = top[1]  # default top for title
 if enable_cross:
     apex_x, apex_y = top
     vertical_top = apex_y + cross_height
@@ -185,7 +176,20 @@ if enable_cross:
         color=cross_color, linewidth=cross_linewidth, zorder=10
     )
 
+    top_y_for_title = vertical_top  # use cross top for title placement
+
+# ---------------- Draw centered title ----------------
+title_padding = 0.1
+if title_text.strip():
+    ax.text(
+        0.5, top_y_for_title + title_padding,
+        title_text,
+        ha="center", va="bottom",
+        fontsize=title_size, fontfamily=title_font, fontweight="bold",
+        color=title_color, zorder=8
+    )
+
 # ---------------- Centered display of figure ----------------
-col_left, col_center, col_right = st.columns([1, 2, 1])  # middle column wider
+col_left, col_center, col_right = st.columns([1, 2, 1])
 with col_center:
-    st.pyplot(fig, use_container_width=False)  # keeps figure readable size
+    st.pyplot(fig, use_container_width=False)
