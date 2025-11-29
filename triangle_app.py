@@ -2,6 +2,13 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
+# ---------------- Streamlight Application Settings ----------------
+st.set_page_config(
+    page_title="Interactive Triangle Fill",
+    layout="wide",        # Makes the app use the full width
+    initial_sidebar_state="expanded"
+)
+
 # ---------------- Available colors ----------------
 available_colors = [
     'blue', 'navy', 'red', 'crimson', 'green', 'lime', 'orange',
