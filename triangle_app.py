@@ -37,12 +37,13 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     return patch
 
 # ---------------- Streamlit UI ----------------
-st.title("Interactive Dual Triangle Generator")
+st.title("Interactive Triangle Fill with Custom Fonts & Grid Lines")
 
 # Centered title input
 title_text = st.text_input("Centered Title (optional)", "")
 title_font = st.selectbox("Title Font", available_fonts, index=0)
 title_size = st.slider("Title Font Size", 10, 40, 16)
+title_color = st.color_picker("Title Color", "#000000")
 
 # Two columns for left/right settings
 col1, col2 = st.columns(2)
@@ -60,6 +61,17 @@ with col2:
     color_right = st.selectbox(f"Color for {label_right}", available_colors, index=available_colors.index("crimson"))
     right_font = st.selectbox(f"{label_right} Font", available_fonts, index=0)
     right_size = st.slider(f"{label_right} Font Size", 8, 30, 12)
+
+# ---------------- Custom horizontal grid lines ----------------
+show_grid = st.checkbox("Show custom horizontal grid lines", value=False)
+grid_percentages = []
+
+if show_grid:
+    st.markdown("### Set up to 10 horizontal grid lines (0–100%)")
+    for i in range(10):
+        pct = st.number_input(f"Grid line {i+1} (%)", min_value=0.0, max_value=100.0, value=0.0, step=1.0, key=f"grid{i}")
+        if pct > 0:
+            grid_percentages.append(pct)
 
 # ---------------- Triangle coordinates ----------------
 base_left  = (0, 0)
@@ -83,6 +95,12 @@ outline = Polygon([base_left, base_right, top], closed=True, fill=False,
                   edgecolor="black", linewidth=2, zorder=10)
 ax.add_patch(outline)
 ax.plot([0.5, 0.5], [0, 0.866], color="black", linewidth=2, zorder=11)
+
+# ---------------- Draw custom horizontal grid lines ----------------
+for pct in grid_percentages:
+    y = pct / 100 * top[1]
+    ax.hlines(y, xmin=0, xmax=1, colors='gray', linestyles='dashed', linewidth=1, zorder=0)
+    ax.text(-0.05, y, f"{pct:.0f}%", ha="right", va="center", fontsize=10, fontweight="bold", color="gray")
 
 # Draw left label
 x_left_center = (base_left[0] + mid[0]) / 2
@@ -108,7 +126,8 @@ if title_text.strip():
         0.5, 1.05,
         title_text,
         ha="center", va="bottom",
-        fontsize=title_size, fontfamily=title_font, fontweight="bold"
+        fontsize=title_size, fontfamily=title_font, fontweight="bold",
+        color=title_color
     )
 
 # ---------------- Show figure ----------------
