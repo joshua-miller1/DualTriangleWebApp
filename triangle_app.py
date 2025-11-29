@@ -2,26 +2,25 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
-# ---------------- Streamlight Application Settings ----------------
+# ---------------- Set page layout ----------------
 st.set_page_config(
     page_title="Interactive Triangle Fill",
-    layout="wide",        # Makes the app use the full width
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ---------------- Available colors ----------------
+# ---------------- Available colors and fonts ----------------
 available_colors = [
     'blue', 'navy', 'red', 'crimson', 'green', 'lime', 'orange',
     'yellow', 'purple', 'pink', 'brown', 'gray', 'black', 'cyan', 'magenta',
     'gold', 'goldenrod', 'lightgoldenrodyellow'
 ]
 
-# ---------------- Available fonts ----------------
 available_fonts = [
     'sans-serif', 'serif', 'cursive', 'fantasy', 'monospace'
 ]
 
-# ---------------- Fill function ----------------
+# ---------------- Function to fill half triangle ----------------
 def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     pct = max(0, min(100, pct)) / 100
     max_height = top[1]
@@ -43,33 +42,33 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     ax.add_patch(patch)
     return patch
 
-# ---------------- Streamlit UI ----------------
+# ---------------- Streamlit GUI ----------------
 st.title("Interactive Triangle Fill (2:1 Height)")
 
-# Centered title input
+# Centered title
 title_text = st.text_input("Centered Title (optional)", "")
 title_font = st.selectbox("Title Font", available_fonts, index=0)
 title_size = st.slider("Title Font Size", 10, 40, 16)
 title_color = st.color_picker("Title Color", "#000000")
 
-# Two columns for left/right settings
+# Left/Right configuration in wide columns
 col1, col2 = st.columns(2)
 
 with col1:
     label_left = st.text_input("Left Half Label", "Left")
-    pct_left   = st.slider(f"Fill % for {label_left}", 0, 100, 50)
-    color_left = st.selectbox(f"Color for {label_left}", available_colors, index=available_colors.index("navy"))
+    pct_left = st.slider(f"{label_left} Fill %", 0, 100, 50)
+    color_left = st.selectbox(f"{label_left} Color", available_colors, index=available_colors.index("navy"))
     left_font = st.selectbox(f"{label_left} Font", available_fonts, index=0)
     left_size = st.slider(f"{label_left} Font Size", 8, 30, 12)
 
 with col2:
     label_right = st.text_input("Right Half Label", "Right")
-    pct_right   = st.slider(f"Fill % for {label_right}", 0, 100, 50)
-    color_right = st.selectbox(f"Color for {label_right}", available_colors, index=available_colors.index("crimson"))
+    pct_right = st.slider(f"{label_right} Fill %", 0, 100, 50)
+    color_right = st.selectbox(f"{label_right} Color", available_colors, index=available_colors.index("crimson"))
     right_font = st.selectbox(f"{label_right} Font", available_fonts, index=0)
     right_size = st.slider(f"{label_right} Font Size", 8, 30, 12)
 
-# ---------------- Custom horizontal grid lines ----------------
+# ---------------- Optional custom horizontal grid lines ----------------
 show_grid = st.checkbox("Show custom horizontal grid lines", value=False)
 grid_percentages = []
 
@@ -88,51 +87,48 @@ if show_grid:
             else:
                 previous_filled = False
         else:
-            break  # Stop showing next inputs if previous not filled
+            break
 
-# ---------------- Triangle coordinates (2:1 height:base) ----------------
-base_left  = (0, 0)
+# ---------------- Triangle coordinates ----------------
+base_left = (0, 0)
 base_right = (1, 0)
-top        = (0.5, 2)  # Height = 2 for 2:1 ratio
-mid        = (0.5, 0)
+top = (0.5, 2)  # 2:1 height-to-base ratio
+mid = (0.5, 0)
 
-# ---------------- Create figure ----------------
-fig, ax = plt.subplots(figsize=(6, 12))  # Taller figure for 2:1 triangle
+# ---------------- Create figure (fixed readable size) ----------------
+fig, ax = plt.subplots(figsize=(6, 12), dpi=100)
 ax.set_aspect("equal")
 ax.set_xlim(-0.1, 1.1)
-ax.set_ylim(-0.1, top[1] + 0.2)  # Include space above top for title
+ax.set_ylim(-0.1, top[1] + 0.2)
 ax.axis("off")
 
-# Draw fills
+# Draw left and right fills
 fill_half(ax, base_left, mid, top, pct_left, color=color_left)
 fill_half(ax, mid, base_right, top, pct_right, color=color_right)
 
-# Draw outline and center line
+# Draw triangle outline and center line
 outline = Polygon([base_left, base_right, top], closed=True, fill=False,
                   edgecolor="black", linewidth=2, zorder=2)
 ax.add_patch(outline)
 ax.plot([0.5, 0.5], [0, top[1]], color="black", linewidth=2, zorder=2)
 
-# ---------------- Draw custom horizontal grid lines on top ----------------
+# Draw custom horizontal grid lines on top (subtle)
 grid_line_width = 2 * 0.75  # 75% of outline thickness
 for pct in grid_percentages:
     y = pct / 100 * top[1]
     ax.hlines(
         y, xmin=0, xmax=1,
-        colors='gray',
-        linestyles='dashed',
-        linewidth=grid_line_width,
-        zorder=5
+        colors='gray', linestyles='dashed',
+        linewidth=grid_line_width, zorder=5
     )
     ax.text(
         -0.05, y, f"{pct:.0f}%",
         ha="right", va="center",
         fontsize=10, fontweight="bold",
-        color="gray",
-        zorder=6
+        color="gray", zorder=6
     )
 
-# Draw left label
+# Draw left/right labels
 x_left_center = (base_left[0] + mid[0]) / 2
 ax.text(
     x_left_center, -0.05,
@@ -141,7 +137,6 @@ ax.text(
     fontsize=left_size, fontfamily=left_font, fontweight="bold", zorder=7
 )
 
-# Draw right label
 x_right_center = (mid[0] + base_right[0]) / 2
 ax.text(
     x_right_center, -0.05,
@@ -153,7 +148,7 @@ ax.text(
 # Draw centered title if provided
 if title_text.strip():
     ax.text(
-        0.5, top[1] + 0.1,  # Slightly above triangle top
+        0.5, top[1] + 0.1,  # slightly above triangle top
         title_text,
         ha="center", va="bottom",
         fontsize=title_size, fontfamily=title_font, fontweight="bold",
@@ -161,4 +156,4 @@ if title_text.strip():
     )
 
 # ---------------- Show figure ----------------
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=False)  # keeps figure scaled to viewable size
