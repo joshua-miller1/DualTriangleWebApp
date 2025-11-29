@@ -87,7 +87,7 @@ top        = (0.5, 2)   # Height = 2 for 2:1 ratio
 mid        = (0.5, 0)
 
 # ---------------- Create figure ----------------
-fig, ax = plt.subplots(figsize=(6,6))
+fig, ax = plt.subplots(figsize=(6, 12))  # Width x Height
 ax.set_aspect("equal")
 ax.set_xlim(-0.1, 1.1)
 ax.set_ylim(-0.1, 1)
