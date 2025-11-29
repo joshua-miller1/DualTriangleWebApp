@@ -4,7 +4,7 @@ from matplotlib.patches import Polygon
 
 # ---------------- Set page layout ----------------
 st.set_page_config(
-    page_title="Interactive Triangle Fill with Optional Cross",
+    page_title="Interactive Triangle Fill with Cross",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -43,7 +43,7 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     return patch
 
 # ---------------- Streamlit GUI ----------------
-st.title("Interactive Triangle Fill with Optional Cross (2:1 Height)")
+st.title("Interactive Triangle Fill with Fixed Cross (2:1 Height)")
 
 # Centered title
 title_text = st.text_input("Centered Title (optional)", "")
@@ -88,16 +88,6 @@ if show_grid:
                 previous_filled = False
         else:
             break
-
-# ---------------- Cross options ----------------
-enable_cross = st.checkbox("Add Cross on Top of Triangle", value=False)
-
-if enable_cross:
-    cross_height = st.number_input("Cross Height", min_value=0.05, max_value=5.0, value=0.4, step=0.05)
-    cross_width = st.number_input("Cross Width", min_value=0.05, max_value=5.0, value=0.2, step=0.05)
-    cross_intersection = st.slider("Intersection Point (0=bottom of vertical line, 1=top)", 0.0, 1.0, 0.5)
-    cross_color = st.color_picker("Cross Color", "#000000")
-    cross_linewidth = st.slider("Cross Line Width", 1, 10, 2)
 
 # ---------------- Triangle coordinates ----------------
 base_left = (0, 0)
@@ -155,34 +145,38 @@ ax.text(
     fontsize=right_size, fontfamily=right_font, fontweight="bold", zorder=7
 )
 
-# ---------------- Draw cross if enabled ----------------
-top_y_for_title = top[1]  # default top for title
-if enable_cross:
-    apex_x, apex_y = top
-    vertical_top = apex_y + cross_height
+# ---------------- Draw fixed cross ----------------
+# Fixed parameters
+cross_height = 0.2
+cross_width = 0.1
+cross_intersection = 0.7
+cross_linewidth = 3
+cross_color = 'black'
+cross_offset = 0.1  # offset above apex
 
-    # Vertical line
-    ax.plot(
-        [apex_x, apex_x],
-        [apex_y, vertical_top],
-        color=cross_color, linewidth=cross_linewidth, zorder=10
-    )
+apex_x, apex_y = top
+vertical_top = apex_y + cross_height + cross_offset
 
-    # Horizontal line at intersection point
-    horizontal_y = apex_y + cross_height * cross_intersection
-    ax.plot(
-        [apex_x - cross_width/2, apex_x + cross_width/2],
-        [horizontal_y, horizontal_y],
-        color=cross_color, linewidth=cross_linewidth, zorder=10
-    )
+# Vertical line
+ax.plot(
+    [apex_x, apex_x],
+    [apex_y + cross_offset, vertical_top],
+    color=cross_color, linewidth=cross_linewidth, zorder=10
+)
 
-    top_y_for_title = vertical_top  # use cross top for title placement
+# Horizontal line at intersection point
+horizontal_y = apex_y + cross_offset + cross_height * cross_intersection
+ax.plot(
+    [apex_x - cross_width/2, apex_x + cross_width/2],
+    [horizontal_y, horizontal_y],
+    color=cross_color, linewidth=cross_linewidth, zorder=10
+)
 
 # ---------------- Draw centered title ----------------
-title_padding = 0.1
+title_padding = 0.05
 if title_text.strip():
     ax.text(
-        0.5, top_y_for_title + title_padding,
+        0.5, vertical_top + title_padding,
         title_text,
         ha="center", va="bottom",
         fontsize=title_size, fontfamily=title_font, fontweight="bold",
