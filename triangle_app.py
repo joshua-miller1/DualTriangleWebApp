@@ -37,7 +37,7 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     return patch
 
 # ---------------- Streamlit UI ----------------
-st.title("Interactive Triangle Fill with Custom Fonts")
+st.title("Interactive Dual Triangle Generator")
 
 # Centered title input
 title_text = st.text_input("Centered Title (optional)", "")
