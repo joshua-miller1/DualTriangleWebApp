@@ -9,6 +9,11 @@ available_colors = [
     'gold', 'goldenrod', 'lightgoldenrodyellow'
 ]
 
+# ---------------- Available fonts ----------------
+available_fonts = [
+    'sans-serif', 'serif', 'cursive', 'fantasy', 'monospace'
+]
+
 # ---------------- Fill function ----------------
 def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     pct = max(0, min(100, pct)) / 100
@@ -32,7 +37,12 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     return patch
 
 # ---------------- Streamlit UI ----------------
-st.title("Interactive Triangle Fill")
+st.title("Interactive Triangle Fill with Custom Fonts")
+
+# Centered title input
+title_text = st.text_input("Centered Title (optional)", "")
+title_font = st.selectbox("Title Font", available_fonts, index=0)
+title_size = st.slider("Title Font Size", 10, 40, 16)
 
 # Two columns for left/right settings
 col1, col2 = st.columns(2)
@@ -41,11 +51,15 @@ with col1:
     label_left = st.text_input("Left Half Label", "Left")
     pct_left   = st.slider(f"Fill % for {label_left}", 0, 100, 50)
     color_left = st.selectbox(f"Color for {label_left}", available_colors, index=available_colors.index("navy"))
+    left_font = st.selectbox(f"{label_left} Font", available_fonts, index=0)
+    left_size = st.slider(f"{label_left} Font Size", 8, 30, 12)
 
 with col2:
     label_right = st.text_input("Right Half Label", "Right")
     pct_right   = st.slider(f"Fill % for {label_right}", 0, 100, 50)
     color_right = st.selectbox(f"Color for {label_right}", available_colors, index=available_colors.index("crimson"))
+    right_font = st.selectbox(f"{label_right} Font", available_fonts, index=0)
+    right_size = st.slider(f"{label_right} Font Size", 8, 30, 12)
 
 # ---------------- Triangle coordinates ----------------
 base_left  = (0, 0)
@@ -70,12 +84,32 @@ outline = Polygon([base_left, base_right, top], closed=True, fill=False,
 ax.add_patch(outline)
 ax.plot([0.5, 0.5], [0, 0.866], color="black", linewidth=2, zorder=11)
 
-# Draw labels
+# Draw left label
 x_left_center = (base_left[0] + mid[0]) / 2
-ax.text(x_left_center, -0.05, f"{label_left}: {pct_left:.0f}%", ha="center", va="top", fontsize=12, fontweight="bold")
+ax.text(
+    x_left_center, -0.05,
+    f"{label_left}: {pct_left:.0f}%",
+    ha="center", va="top",
+    fontsize=left_size, fontfamily=left_font, fontweight="bold"
+)
 
+# Draw right label
 x_right_center = (mid[0] + base_right[0]) / 2
-ax.text(x_right_center, -0.05, f"{label_right}: {pct_right:.0f}%", ha="center", va="top", fontsize=12, fontweight="bold")
+ax.text(
+    x_right_center, -0.05,
+    f"{label_right}: {pct_right:.0f}%",
+    ha="center", va="top",
+    fontsize=right_size, fontfamily=right_font, fontweight="bold"
+)
+
+# Draw centered title if provided
+if title_text.strip():
+    ax.text(
+        0.5, 1.05,
+        title_text,
+        ha="center", va="bottom",
+        fontsize=title_size, fontfamily=title_font, fontweight="bold"
+    )
 
 # ---------------- Show figure ----------------
 st.pyplot(fig)
