@@ -104,7 +104,7 @@ ax.add_patch(outline)
 ax.plot([0.5, 0.5], [0, 0.866], color="black", linewidth=2, zorder=2)
 
 # ---------------- Draw custom horizontal grid lines on top (subtle) ----------------
-grid_line_width = 2 * 0.75  # 75% of outline thickness
+grid_line_width = 2 * 0.50  # 50% of outline thickness
 for pct in grid_percentages:
     y = pct / 100 * top[1]
     ax.hlines(
