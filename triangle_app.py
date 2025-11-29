@@ -4,7 +4,7 @@ from matplotlib.patches import Polygon
 
 # ---------------- Set page layout ----------------
 st.set_page_config(
-    page_title="Interactive Triangle Fill with Cross",
+    page_title="Interactive Triangle Fill with Optional Cross",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -43,7 +43,7 @@ def fill_half(ax, base_left, base_right, top, pct, color="navy"):
     return patch
 
 # ---------------- Streamlit GUI ----------------
-st.title("Interactive Triangle Fill with Cross (2:1 Height)")
+st.title("Interactive Triangle Fill with Optional Cross (2:1 Height)")
 
 # Centered title
 title_text = st.text_input("Centered Title (optional)", "")
@@ -88,6 +88,16 @@ if show_grid:
                 previous_filled = False
         else:
             break
+
+# ---------------- Cross options ----------------
+enable_cross = st.checkbox("Add Cross on Top of Triangle", value=False)
+
+if enable_cross:
+    cross_height = st.number_input("Cross Height", min_value=0.05, max_value=5.0, value=0.4, step=0.05)
+    cross_width = st.number_input("Cross Width", min_value=0.05, max_value=5.0, value=0.2, step=0.05)
+    cross_intersection = st.slider("Intersection Point (0=bottom of vertical line, 1=top)", 0.0, 1.0, 0.5)
+    cross_color = st.color_picker("Cross Color", "#000000")
+    cross_linewidth = st.slider("Cross Line Width", 1, 10, 2)
 
 # ---------------- Triangle coordinates ----------------
 base_left = (0, 0)
@@ -155,27 +165,25 @@ if title_text.strip():
         color=title_color, zorder=8
     )
 
-# ---------------- Draw cross on top of triangle ----------------
-cross_height = 0.4
-cross_width = 0.2
-cross_color = 'black'
-cross_linewidth = 2
+# ---------------- Draw cross if enabled ----------------
+if enable_cross:
+    apex_x, apex_y = top
+    vertical_top = apex_y + cross_height
 
-apex_x, apex_y = top
+    # Vertical line
+    ax.plot(
+        [apex_x, apex_x],
+        [apex_y, vertical_top],
+        color=cross_color, linewidth=cross_linewidth, zorder=10
+    )
 
-# Vertical line of cross
-ax.plot(
-    [apex_x, apex_x],
-    [apex_y, apex_y + cross_height],
-    color=cross_color, linewidth=cross_linewidth, zorder=10
-)
-
-# Horizontal line of cross (centered at vertical top, halfway up cross)
-ax.plot(
-    [apex_x - cross_width/2, apex_x + cross_width/2],
-    [apex_y + cross_height*0.5, apex_y + cross_height*0.5],
-    color=cross_color, linewidth=cross_linewidth, zorder=10
-)
+    # Horizontal line at intersection point
+    horizontal_y = apex_y + cross_height * cross_intersection
+    ax.plot(
+        [apex_x - cross_width/2, apex_x + cross_width/2],
+        [horizontal_y, horizontal_y],
+        color=cross_color, linewidth=cross_linewidth, zorder=10
+    )
 
 # ---------------- Centered display of figure ----------------
 col_left, col_center, col_right = st.columns([1, 2, 1])  # middle column wider
